@@ -24,14 +24,18 @@ class Enclosure
 
     /**
      * @var Collection|Security[]
-     * @ORM\OneToMany()
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Security", mappedBy="enclosure", cascade={"persist"})
      */
     private $securities;
 
-    public function __construct()
+    public function __construct(bool $withBasicSecurity = false)
     {
         $this->securities = new ArrayCollection();
         $this->dinosaurs = new ArrayCollection();
+
+        if ($withBasicSecurity) {
+            $this->addSecurity(new Security('Fence', true, $this));
+        }
     }
 
     /**
@@ -53,6 +57,11 @@ class Enclosure
         }
 
         $this->dinosaurs[] = $dinosaur;
+    }
+
+    public function addSecurity(Security $security)
+    {
+        $this->securities[] = $security;
     }
 
     public function isSecurityActive(): bool
